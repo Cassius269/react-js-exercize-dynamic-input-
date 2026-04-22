@@ -2,7 +2,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-function SubscriptionForm() {
+function RegisterForm({ addUser }) {
   // Schéma de validation des données avec yup
   const userSchema = yup.object({
     name: yup
@@ -10,15 +10,18 @@ function SubscriptionForm() {
       .trim()
       .required("Le nom est requis")
       .min(3, "Minimum 3 caractères"),
-    emails: yup.array().of(
-      yup.object({
-        email: yup
-          .string()
-          .trim()
-          .required("Email obligatoire")
-          .email("Email invalide"),
-      }),
-    ),
+    emails: yup
+      .array()
+      .of(
+        yup.object({
+          email: yup
+            .string()
+            .trim()
+            .required("Email obligatoire")
+            .email("Email invalide"),
+        }),
+      )
+      .min(1, "Ajouter au moins un email"),
     password: yup
       .string()
       .trim()
@@ -38,8 +41,9 @@ function SubscriptionForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     control,
-    watch,
-    getValues,
+    // watch,
+    // getValues,
+    reset,
   } = useForm({
     defaultValues: defaultValues,
     resolver: yupResolver(userSchema),
@@ -54,15 +58,43 @@ function SubscriptionForm() {
     name: "emails",
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     alert("Formulaire soumis avec succès !");
     console.log(data);
-  };
 
+    try {
+      const response = await fetch(
+        "https://restapi.fr/api/usersreactc14?delay=2",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        console.log("Nouvel utilisateur", data);
+        addUser(data);
+        reset(defaultValues);
+      } else {
+        console.log("Ooops une erreur");
+      }
+    } catch (error) {
+      console.log(`Erreur: ${error.message}`);
+    }
+  };
+  console.log("Erreurs du champs email: ", errors.emails);
   return (
-    <section className="container">
+    <section>
       <h2>Inscription</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-warning-subtle p-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-warning-subtle p-4 mt-3"
+      >
         {/* Champ Nom */}
         <div>
           <label className="form-label">Nom :</label>
@@ -90,11 +122,6 @@ function SubscriptionForm() {
               <button type="button" onClick={() => remove(index)}>
                 🗑️
               </button>
-              {errors?.emails?.[index]?.email && (
-                <i className="text-danger">
-                  {errors.emails[index].email.message}
-                </i>
-              )}
             </div>
           ))}
           <button
@@ -137,4 +164,4 @@ function SubscriptionForm() {
   );
 }
 
-export default SubscriptionForm;
+export default RegisterForm;
