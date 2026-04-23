@@ -7,10 +7,14 @@ export default function App() {
   // Gestion de l'état local des utilisateurs
   const [users, setUsers] = useState([]);
 
+  // Gestion du loading
+  const [isLoading, setIsLoading] = useState(false);
+
   // Récupérer les utilisateurs
   useEffect(() => {
     const getUsers = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(
           "https://restapi.fr/api/usersreactc14?delay=2",
         );
@@ -24,6 +28,8 @@ export default function App() {
         }
       } catch (error) {
         console.log(`Erreur ${error.message}`);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -36,7 +42,7 @@ export default function App() {
     <>
       <main className="container">
         <RegisterForm addUser={addUser} />
-        <UserList users={users} />
+        <UserList users={users} isLoading={isLoading} />
       </main>
     </>
   );

@@ -16,7 +16,7 @@ function RegisterForm({ addUser }) {
         yup
           .string()
           .trim()
-          .required("Email obligatoire")
+          .required("L'email est requis")
           .email("Email invalide"),
       )
       .min(1, "Ajouter au moins un email"),
@@ -38,6 +38,7 @@ function RegisterForm({ addUser }) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setError,
     control,
     watch,
     // getValues,
@@ -77,15 +78,23 @@ function RegisterForm({ addUser }) {
 
         console.log("Nouvel utilisateur", data);
         addUser(data);
-        reset(defaultValues);
+        reset(defaultValues); // réinitialiser le formulaire avec les valeurs par défaut
       } else {
         console.log("Ooops une erreur");
+        setError("globalError", {
+          type: "server",
+          message: "Échec de l'inscription",
+        });
       }
     } catch (error) {
       console.log(`Erreur: ${error.message}`);
+      setError("globalError", {
+        type: "server",
+        message: `Erreur: ${error.message}`,
+      });
     }
   };
-  console.log("Erreurs du champs email: ", errors.emails);
+  // console.log("Erreurs du champs email: ", errors.emails);
   return (
     <section>
       <h2>Inscription</h2>
@@ -165,6 +174,9 @@ function RegisterForm({ addUser }) {
         >
           S'inscrire
         </button>
+        {errors.globalError?.message && (
+          <p className="text-danger mt-3">{errors.globalError.message}</p>
+        )}
       </form>
     </section>
   );
