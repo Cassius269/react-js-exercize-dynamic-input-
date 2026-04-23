@@ -5,9 +5,13 @@ function UserList({ users }) {
       <ul>
         {users.map((u) => (
           <li key={u._id}>
-            {u.name} =======>
+            {u.name}
+            <span> ======= </span>
             {u.emails.map((email, index) => (
-              <i key={email}>{email}{index !== u.emails.length-1 ? ', ' : ''}</i>
+              <i key={email}>
+                {email}
+                {index !== u.emails.length - 1 ? ",   " : ""}
+              </i>
             ))}
           </li>
         ))}

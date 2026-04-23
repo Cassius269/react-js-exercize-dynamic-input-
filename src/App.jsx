@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import "./assets/styles/App.scss";
+import "./assets/styles/App.scss";
 import RegisterForm from "./components/RegisterForm";
 import UserList from "./components/UserList";
 
