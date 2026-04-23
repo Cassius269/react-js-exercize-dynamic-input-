@@ -122,6 +122,12 @@ function RegisterForm({ addUser }) {
               <button type="button" onClick={() => remove(index)}>
                 🗑️
               </button>
+              {/*Affichage des erreurs */}
+              {errors?.emails?.[index]?.email && (
+                <i className="text-danger">
+                  {errors.emails[index].email.message}
+                </i>
+              )}
             </div>
           ))}
           <button
@@ -131,6 +137,10 @@ function RegisterForm({ addUser }) {
           >
             Ajouter un email
           </button>
+          {/* Erreur globale du champs emails */}
+          {errors?.emails?.message && (
+            <p className="text-danger ms-4">{errors.emails.message}</p>
+          )}
         </div>
 
         {/* Champ Mot de passe */}
