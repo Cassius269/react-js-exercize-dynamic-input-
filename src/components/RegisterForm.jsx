@@ -13,13 +13,11 @@ function RegisterForm({ addUser }) {
     emails: yup
       .array()
       .of(
-        yup.object({
-          email: yup
-            .string()
-            .trim()
-            .required("Email obligatoire")
-            .email("Email invalide"),
-        }),
+        yup
+          .string()
+          .trim()
+          .required("Email obligatoire")
+          .email("Email invalide"),
       )
       .min(1, "Ajouter au moins un email"),
     password: yup
@@ -41,7 +39,7 @@ function RegisterForm({ addUser }) {
     handleSubmit,
     formState: { errors, isSubmitting },
     control,
-    // watch,
+    watch,
     // getValues,
     reset,
   } = useForm({
@@ -58,9 +56,9 @@ function RegisterForm({ addUser }) {
     name: "emails",
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (newUser) => {
     alert("Formulaire soumis avec succès !");
-    console.log(data);
+    console.log(newUser);
 
     try {
       const response = await fetch(
@@ -70,7 +68,7 @@ function RegisterForm({ addUser }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(newUser),
         },
       );
 
@@ -116,23 +114,21 @@ function RegisterForm({ addUser }) {
           {fields.map((field, index) => (
             <div key={field.id} className="d-flex gap-3">
               <input
-                {...register(`emails.${index}.email`)}
+                {...register(`emails.${index}`)}
                 className="form-control mb-1"
               />
               <button type="button" onClick={() => remove(index)}>
                 🗑️
               </button>
               {/*Affichage des erreurs */}
-              {errors?.emails?.[index]?.email && (
-                <i className="text-danger">
-                  {errors.emails[index].email.message}
-                </i>
+              {errors?.emails?.[index] && (
+                <i className="text-danger">{errors.emails[index].message}</i>
               )}
             </div>
           ))}
           <button
             type="button"
-            onClick={() => append({ email: "" })}
+            onClick={() => append("")}
             className="btn btn-success ms-2 mt-2"
           >
             Ajouter un email
